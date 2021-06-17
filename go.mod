@@ -12,5 +12,5 @@ require (
 	go.uber.org/cadence v0.17.0
 	go.uber.org/yarpc v1.54.2
 	go.uber.org/zap v1.17.0
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.4.0
 )
