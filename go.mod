@@ -1,4 +1,4 @@
-module io.matrinos/cadence/core
+module github.com/Matrinos/iot-cadence-go-core
 
 go 1.16
 
