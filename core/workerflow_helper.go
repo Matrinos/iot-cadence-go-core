@@ -29,8 +29,8 @@ const (
 )
 
 type (
-	// SampleHelper class for workflow sample helper.
-	SampleHelper struct {
+	// WorkflowHelper class for workflow sample helper.
+	WorkflowHelper struct {
 		Service            workflowserviceclient.Interface
 		WorkerMetricScope  tally.Scope
 		ServiceMetricScope tally.Scope
@@ -80,12 +80,12 @@ var (
 )
 
 // SetConfigFile sets the config file path
-func (h *SampleHelper) SetConfigFile(configFile string) {
+func (h *WorkflowHelper) SetConfigFile(configFile string) {
 	h.configFile = configFile
 }
 
 // SetupServiceConfig setup the config for the sample code run
-func (h *SampleHelper) SetupServiceConfig() {
+func (h *WorkflowHelper) SetupServiceConfig() {
 	if h.Service != nil {
 		return
 	}
@@ -169,7 +169,7 @@ func (h *SampleHelper) SetupServiceConfig() {
 }
 
 // StartWorkflow starts a workflow
-func (h *SampleHelper) StartWorkflow(
+func (h *WorkflowHelper) StartWorkflow(
 	options client.StartWorkflowOptions,
 	workflow interface{},
 	args ...interface{},
@@ -178,7 +178,7 @@ func (h *SampleHelper) StartWorkflow(
 }
 
 // StartWorkflowWithCtx starts a workflow with the provided context
-func (h *SampleHelper) StartWorkflowWithCtx(
+func (h *WorkflowHelper) StartWorkflowWithCtx(
 	ctx context.Context,
 	options client.StartWorkflowOptions,
 	workflow interface{},
@@ -201,7 +201,7 @@ func (h *SampleHelper) StartWorkflowWithCtx(
 }
 
 // SignalWithStartWorkflowWithCtx signals workflow and starts it if it's not yet started
-func (h *SampleHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workflowID string, signalName string, signalArg interface{},
+func (h *WorkflowHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workflowID string, signalName string, signalArg interface{},
 	options client.StartWorkflowOptions, workflow interface{}, workflowArgs ...interface{}) *workflow.Execution {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
@@ -220,11 +220,11 @@ func (h *SampleHelper) SignalWithStartWorkflowWithCtx(ctx context.Context, workf
 	return we
 }
 
-func (h *SampleHelper) RegisterWorkflow(workflow interface{}) {
+func (h *WorkflowHelper) RegisterWorkflow(workflow interface{}) {
 	h.RegisterWorkflowWithAlias(workflow, "")
 }
 
-func (h *SampleHelper) RegisterWorkflowWithAlias(workflow interface{}, alias string) {
+func (h *WorkflowHelper) RegisterWorkflowWithAlias(workflow interface{}, alias string) {
 	registryOption := registryOption{
 		registry: workflow,
 		alias:    alias,
@@ -232,11 +232,11 @@ func (h *SampleHelper) RegisterWorkflowWithAlias(workflow interface{}, alias str
 	h.workflowRegistries = append(h.workflowRegistries, registryOption)
 }
 
-func (h *SampleHelper) RegisterActivity(activity interface{}) {
+func (h *WorkflowHelper) RegisterActivity(activity interface{}) {
 	h.RegisterActivityWithAlias(activity, "")
 }
 
-func (h *SampleHelper) RegisterActivityWithAlias(activity interface{}, alias string) {
+func (h *WorkflowHelper) RegisterActivityWithAlias(activity interface{}, alias string) {
 	registryOption := registryOption{
 		registry: activity,
 		alias:    alias,
@@ -245,7 +245,7 @@ func (h *SampleHelper) RegisterActivityWithAlias(activity interface{}, alias str
 }
 
 // StartWorkers starts workflow worker and activity worker based on configured options.
-func (h *SampleHelper) StartWorkers(domainName string, groupName string, options worker.Options) {
+func (h *WorkflowHelper) StartWorkers(domainName string, groupName string, options worker.Options) {
 	worker := worker.New(h.Service, domainName, groupName, options)
 	h.registerWorkflowAndActivity(worker)
 
@@ -256,7 +256,7 @@ func (h *SampleHelper) StartWorkers(domainName string, groupName string, options
 	}
 }
 
-func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args ...interface{}) {
+func (h *WorkflowHelper) QueryWorkflow(workflowID, runID, queryType string, args ...interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
@@ -275,7 +275,7 @@ func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args .
 	h.Logger.Info("Received query result", zap.Any("Result", result))
 }
 
-func (h *SampleHelper) ConsistentQueryWorkflow(
+func (h *WorkflowHelper) ConsistentQueryWorkflow(
 	valuePtr interface{},
 	workflowID, runID, queryType string,
 	args ...interface{},
@@ -305,7 +305,7 @@ func (h *SampleHelper) ConsistentQueryWorkflow(
 	return err
 }
 
-func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{}) {
+func (h *WorkflowHelper) SignalWorkflow(workflowID, signal string, data interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
@@ -319,7 +319,7 @@ func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{
 	}
 }
 
-func (h *SampleHelper) CancelWorkflow(workflowID string) {
+func (h *WorkflowHelper) CancelWorkflow(workflowID string) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
@@ -333,7 +333,7 @@ func (h *SampleHelper) CancelWorkflow(workflowID string) {
 	}
 }
 
-func (h *SampleHelper) registerWorkflowAndActivity(worker worker.Worker) {
+func (h *WorkflowHelper) registerWorkflowAndActivity(worker worker.Worker) {
 	for _, w := range h.workflowRegistries {
 		if len(w.alias) == 0 {
 			worker.RegisterWorkflow(w.registry)
