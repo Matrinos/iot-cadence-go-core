@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	"go.uber.org/cadence/.gen/go/shared"
@@ -90,17 +91,25 @@ func (h *WorkflowHelper) SetupServiceConfig() {
 		return
 	}
 
-	if h.configFile == "" {
-		h.configFile = defaultConfigFile
-	}
-	// Initialize developer config for running samples
-	configData, err := ioutil.ReadFile(h.configFile)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to log config file: %v, Error: %v", defaultConfigFile, err))
-	}
+	if os.Getenv("HostNameAndPort") != "" {
+		h.Config = Configuration{
+			DomainName:      os.Getenv("DmainName"),
+			ServiceName:     os.Getenv("ServiceName"),
+			HostNameAndPort: os.Getenv("HostNameAndPort"),
+		}
+	} else {
+		if h.configFile == "" {
+			h.configFile = defaultConfigFile
+		}
+		// Initialize developer config for running samples
+		configData, err := ioutil.ReadFile(h.configFile)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to log config file: %v, Error: %v", defaultConfigFile, err))
+		}
 
-	if err := yaml.Unmarshal(configData, &h.Config); err != nil {
-		panic(fmt.Sprintf("Error initializing configuration: %v", err))
+		if err := yaml.Unmarshal(configData, &h.Config); err != nil {
+			panic(fmt.Sprintf("Error initializing configuration: %v", err))
+		}
 	}
 
 	// Initialize logger for running samples
