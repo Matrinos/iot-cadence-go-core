@@ -381,3 +381,13 @@ func (h *WorkflowHelper) GetWorkflowHistory(workflowID, runID string) (*shared.H
 	history.Events = events
 	return history, nil
 }
+
+func (h *WorkflowHelper) GetWorkflow(workflowId string, runId string) client.WorkflowRun {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	return workflowClient.GetWorkflow(context.Background(), workflowId, runId)
+}
