@@ -14,4 +14,5 @@ require (
 	go.uber.org/zap v1.17.0
 	gopkg.in/yaml.v2 v2.4.0
 )
+
 replace github.com/apache/thrift => github.com/apache/thrift v0.0.0-20190309152529-a9b748bb0e02

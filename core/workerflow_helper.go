@@ -358,3 +358,26 @@ func (h *WorkflowHelper) registerWorkflowAndActivity(worker worker.Worker) {
 		}
 	}
 }
+
+func (h *WorkflowHelper) GetWorkflowHistory(workflowID, runID string) (*shared.History, error) {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	iter := workflowClient.GetWorkflowHistory(context.Background(), workflowID, runID, false,
+		shared.HistoryEventFilterTypeAllEvent)
+	events := []*shared.HistoryEvent{}
+	for iter.HasNext() {
+		event, err := iter.Next()
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
+	history := &shared.History{}
+	history.Events = events
+	return history, nil
+}
