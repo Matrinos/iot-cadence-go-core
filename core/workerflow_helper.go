@@ -342,18 +342,20 @@ func (h *WorkflowHelper) CancelWorkflow(workflowID string) {
 	}
 }
 
-func (h *WorkflowHelper) TerminateWorkflow(workflowID string, reason string) {
+func (h *WorkflowHelper) TerminateWorkflow(workflowID string, reason string) error {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
-		panic(err)
+		return err
 	}
 
 	err = workflowClient.TerminateWorkflow(context.Background(), workflowID, "", reason, []byte{})
 	if err != nil {
 		h.Logger.Error("Failed to cancel workflow", zap.Error(err))
-		panic("Failed to cancel workflow.")
+		return err
 	}
+
+	return nil
 }
 
 func (h *WorkflowHelper) registerWorkflowAndActivity(worker worker.Worker) {
